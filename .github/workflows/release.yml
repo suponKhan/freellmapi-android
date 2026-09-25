@@ -6,52 +6,102 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Release tag name'
+        description: 'Release tag name (e.g., v1.0.0)'
         required: true
         type: string
 
 jobs:
-  build:
-    name: Build Release APK
+  build-release:
+    name: Build & Release APKs (32-bit & 64-bit)
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup JDK 17
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Java 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        api-level: 34
-        build-tools: '34.0.0'
-        
-    - name: Grant execute permission
+
+    - name: Download nodejs-mobile binaries & headers
+      run: |
+        echo "Downloading nodejs-mobile v18.20.4..."
+        curl -fsSL -o nodejs-mobile.zip "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.20.4/nodejs-mobile-v18.20.4-android.zip"
+        unzip -q nodejs-mobile.zip -d nodejs-mobile-tmp
+        mkdir -p android/app/libnode/bin/arm64-v8a
+        mkdir -p android/app/libnode/bin/armeabi-v7a
+        mkdir -p android/app/libnode/bin/x86_64
+        cp nodejs-mobile-tmp/bin/arm64-v8a/libnode.so android/app/libnode/bin/arm64-v8a/
+        cp nodejs-mobile-tmp/bin/armeabi-v7a/libnode.so android/app/libnode/bin/armeabi-v7a/
+        cp nodejs-mobile-tmp/bin/x86_64/libnode.so android/app/libnode/bin/x86_64/
+        cp -r nodejs-mobile-tmp/include android/app/libnode/
+        rm -rf nodejs-mobile.zip nodejs-mobile-tmp
+        echo "nodejs-mobile installed"
+        ls -la android/app/libnode/bin/
+
+    - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
-      
-    - name: Build Release APK
-      run: ./gradlew assembleRelease
+
+    - name: Build Release APKs
+      run: ./gradlew assembleRelease --stacktrace
       env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
-        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-        
+        TERM: dumb
+
+    - name: Prepare release artifacts
+      run: |
+        TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+        mkdir -p dist-apks
+        for apk in android/app/build/outputs/apk/release/*.apk; do
+          filename=$(basename "$apk")
+          cp "$apk" "dist-apks/FreeLLMAPI-${TAG}-${filename}"
+        done
+        echo "=== Release Artifacts ==="
+        ls -lh dist-apks/
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-        name: "FreeLLMAPI ${{ github.event.inputs.tag_name || github.ref_name }}"
+        name: "FreeLLMAPI Android ${{ github.event.inputs.tag_name || github.ref_name }}"
         body: |
-          ## FreeLLMAPI Android
-        
-          OpenAI-compatible LLM router for Android
-        
-          ### Usage
-          - base_url: http://localhost:3001/v1
-          - api_key: freellmapi
-        files: android/app/build/outputs/apk/release/*.apk
+          ## 📱 FreeLLMAPI Android Release
+          
+          OpenAI-compatible LLM router running directly on your Android device (32-bit and 64-bit support).
+          
+          ### 📦 Download Assets
+          - **`FreeLLMAPI-...-arm64-v8a-release.apk`**: 64-bit devices (modern Android phones)
+          - **`FreeLLMAPI-...-armeabi-v7a-release.apk`**: 32-bit devices (older Android phones)
+          - **`FreeLLMAPI-...-universal-release.apk`**: Universal APK (compatible with all devices)
+          
+          ### 🚀 Features
+          - **24/7 Keep-Alive**: Background Foreground Service with Partial Wake Lock.
+          - **Auto Boot**: Automatically resumes on phone restart.
+          - **Network Wide**: Reachable on `http://127.0.0.1:3001` or via WiFi / Mobile Hotspot `http://<phone-ip>:3001`.
+          - **Zero-Key Out of the Box**: Pre-configured with Pollinations.ai & ApiAirforce.
+          - **Optional Premium Keys**: Supports Groq, Cerebras, Google Gemini, Ollama Cloud.
+          - **Web Dashboard**: View real-time stats and models on port 3001.
+          
+          ### 🔌 Usage Example
+          ```python
+          from openai import OpenAI
+          
+          client = OpenAI(
+              base_url="http://localhost:3001/v1",
+              api_key="freellmapi"
+          )
+          
+          response = client.chat.completions.create(
+              model="auto",
+              messages=[{"role": "user", "content": "Hello from Android!"}]
+          )
+          print(response.choices[0].message.content)
+          ```
+        files: dist-apks/*.apk
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
