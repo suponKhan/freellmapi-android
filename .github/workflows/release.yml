@@ -28,10 +28,14 @@ jobs:
     - name: Grant execute permission
       run: chmod +x ./gradlew
       
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=/usr/lib/android-sdk" > local.properties
+        
     - name: Build Release APK
       run: ./gradlew assembleRelease
       env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_HOME: /usr/lib/android-sdk
         TERM: dumb
         
     - name: Create GitHub Release
