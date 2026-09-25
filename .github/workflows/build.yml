@@ -27,17 +27,20 @@ jobs:
       
     - name: Create local.properties
       run: |
-        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
-        echo "ANDROID_HOME is: $ANDROID_HOME"
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        cat local.properties
         
-    - name: Show project structure
+    - name: List project files
       run: |
-        echo "=== Project Files ==="
-        find . -name "*.kt" -o -name "*.gradle*" -o -name "*.xml" -o -name "*.properties" 2>/dev/null | grep -v ".gradle" | head -40
+        echo "=== Root ==="
+        ls -la
+        echo "=== Android App ==="
+        ls -la android/app/
+        echo "=== Java Files ==="
+        find android/app/src -name "*.kt" -o -name "*.java"
         
     - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug --info
       env:
         ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
-        JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
