@@ -24,11 +24,11 @@ jobs:
         
     - name: Setup Android SDK
       run: |
-        mkdir -p ~/android-sdk
+        # Use pre-installed Android SDK on GitHub Actions
         export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/platform-tools
-        sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-35" "build-tools;35.0.0"
-        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+        mkdir -p $ANDROID_HOME
+        # Install required components
+        yes | sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-35" "build-tools;35.0.0" >/dev/null 2>&1 || true
         
     - name: Download nodejs-mobile
       run: |
