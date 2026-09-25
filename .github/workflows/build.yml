@@ -22,6 +22,13 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
+    - name: Setup Android SDK
+      run: |
+        mkdir -p ~/android-sdk
+        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+        sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+        
     - name: Download nodejs-mobile
       run: |
         NODE_VERSION="18.20.4"
@@ -38,15 +45,17 @@ jobs:
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
         echo "Downloaded nodejs-mobile binaries"
-        ls -la android/app/libnode/bin/
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=$HOME/android-sdk" > local.properties
+        
     - name: Build Debug APKs
       run: ./gradlew assembleDebug
       env:
-        ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
         GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
         
