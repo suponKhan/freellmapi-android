@@ -22,24 +22,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Setup Android SDK
+    - name: Build with Gradle Wrapper
       run: |
-        sudo apt-get update
-        sudo apt-get install -y android-sdk
-        echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
-        
-    - name: Grant execute permission
-      run: chmod +x ./gradlew
-      
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+        chmod +x ./gradlew
+        ./gradlew assembleDebug --no-daemon
       env:
-        ANDROID_HOME: /usr/lib/android-sdk
-        TERM: dumb
-        
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: freellmapi-android-debug
-        path: android/app/build/outputs/apk/debug/*.apk
-        retention-days: 30
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
