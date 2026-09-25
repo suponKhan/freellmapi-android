@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FreeLLMAPI</string>
+    <string name="channel_name">FreeLLMAPI Background Service</string>
+    <string name="channel_description">Keeps FreeLLMAPI router running continuously</string>
+</resources>
