@@ -22,35 +22,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Download nodejs-mobile
-      run: |
-        echo "Downloading nodejs-mobile v18.20.4..."
-        curl -L -o nodejs-mobile.zip "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.20.4/nodejs-mobile-v18.20.4-android.zip"
-        echo "Downloaded: $(ls -lh nodejs-mobile.zip)"
-        unzip -q nodejs-mobile.zip -d nodejs-mobile-tmp
-        echo "Extracted to nodejs-mobile-tmp"
-        
-    - name: Copy native libraries
-      run: |
-        mkdir -p android/app/libnode/bin/arm64-v8a
-        mkdir -p android/app/libnode/bin/armeabi-v7a
-        mkdir -p android/app/libnode/bin/x86_64
-        cp nodejs-mobile-tmp/bin/arm64-v8a/libnode.so android/app/libnode/bin/arm64-v8a/
-        cp nodejs-mobile-tmp/bin/armeabi-v7a/libnode.so android/app/libnode/bin/armeabi-v7a/
-        cp nodejs-mobile-tmp/bin/x86_64/libnode.so android/app/libnode/bin/x86_64/
-        cp -r nodejs-mobile-tmp/include android/app/libnode/
-        rm -rf nodejs-mobile.zip nodejs-mobile-tmp
-        echo "Native libraries installed"
-        ls -la android/app/libnode/bin/
-        
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
-        echo "ANDROID_HOME is: $ANDROID_HOME"
-        
     - name: Build Debug APKs
       run: ./gradlew assembleDebug
       env:
