@@ -26,7 +26,7 @@ jobs:
         chmod +x ./gradlew
         ./gradlew assembleDebug
       env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
         
     - name: Upload APK
