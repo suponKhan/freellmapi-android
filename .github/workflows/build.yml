@@ -22,25 +22,13 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
+    - name: List files
+      run: find . -type f -name "*.kt" -o -name "*.xml" -o -name "*.gradle*" | head -30
       
-    - name: Create local.properties
+    - name: Build with Gradle
       run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
-        cat local.properties
-        
-    - name: List project files
-      run: |
-        echo "=== Root ==="
-        ls -la
-        echo "=== Android App ==="
-        ls -la android/app/
-        echo "=== Java Files ==="
-        find android/app/src -name "*.kt" -o -name "*.java"
-        
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --info
+        export ANDROID_HOME=/usr/local/lib/android/sdk
+        chmod +x ./gradlew
+        ./gradlew assembleDebug
       env:
-        ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
