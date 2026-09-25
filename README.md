@@ -1,24 +1,49 @@
-# FreeLLMAPI Android Port
+# FreeLLMAPI Android
 
-OpenAI-compatible LLM router for Android devices.
+[![Build Android APKs](https://github.com/suponKhan/freellmapi-android/actions/workflows/build.yml/badge.svg)](https://github.com/suponKhan/freellmapi-android/actions/workflows/build.yml)
+[![Release APKs](https://github.com/suponKhan/freellmapi-android/actions/workflows/release.yml/badge.svg)](https://github.com/suponKhan/freellmapi-android/actions/workflows/release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/suponKhan/freellmapi-android)](https://github.com/suponKhan/freellmapi-android/releases/latest)
 
-## Repository
-https://github.com/suponKhan/freellmapi-android
+**FreeLLMAPI ported to Android.** Runs a full OpenAI-compatible LLM router on your mobile device as a 24/7 background foreground service.
 
-## Features
-- Runs FreeLLMAPI server on Android via Node.js
-- OpenAI-compatible API endpoints
-- Works on mobile data, WiFi, or local network
-- 32-bit and 64-bit APK support
-- Auto-start on boot
-- Foreground service keeps router alive
+---
 
-## Endpoints
-- Chat: `http://localhost:3001/v1/chat/completions`
-- Models: `http://localhost:3001/v1/models`
-- Dashboard: `http://localhost:3001/`
+## 📱 Download APKs
 
-## Usage
+Directly download prebuilt APKs from **[GitHub Releases](https://github.com/suponKhan/freellmapi-android/releases/latest)**:
+
+| Architecture | Device Type | APK Download |
+| :--- | :--- | :--- |
+| **ARM 64-bit (`arm64-v8a`)** | Modern Android devices | [Download `FreeLLMAPI-arm64-v8a.apk`](https://github.com/suponKhan/freellmapi-android/releases/latest) |
+| **ARM 32-bit (`armeabi-v7a`)** | Older Android devices | [Download `FreeLLMAPI-armeabi-v7a.apk`](https://github.com/suponKhan/freellmapi-android/releases/latest) |
+| **Universal (`universal`)** | All devices (all ABIs bundled) | [Download `FreeLLMAPI-universal.apk`](https://github.com/suponKhan/freellmapi-android/releases/latest) |
+| **x86_64 (`x86_64`)** | Emulators / Chromebooks | [Download `FreeLLMAPI-x86_64.apk`](https://github.com/suponKhan/freellmapi-android/releases/latest) |
+
+---
+
+## ✨ Features
+
+- **24/7 Keep-Alive Background Service**: Uses Android Foreground Service with Partial WakeLock and battery optimization whitelisting so the proxy router never dies in sleep mode.
+- **Auto-Start on Boot**: Automatically restores the router service after device restart.
+- **Network-Wide Accessibility**: Works locally on `http://127.0.0.1:3001` or across your LAN, WiFi, or Mobile Hotspot on `http://<phone-ip>:3001`.
+- **Zero-Key Keyless Inference**: Works immediately with Pollinations.ai & ApiAirforce without any API keys.
+- **Optional Custom Provider Keys**: Set keys for Groq, Cerebras, Google Gemini, Ollama Cloud.
+- **In-App Dashboard & WebView**: Live dashboard and metrics directly on the phone or in your browser.
+- **Full Automation via GitHub Actions**: Builds and releases are built 100% in GitHub CI with zero device overhead.
+- **Automatic Fork Sync**: Checks upstream `freellmapi` on schedule and builds updated releases automatically.
+
+---
+
+## 🔌 Using the API from Other Apps
+
+Any app on your phone, local network, or hotspot can use FreeLLMAPI as a backend:
+
+### Endpoint Addresses
+- **Base URL**: `http://localhost:3001/v1` (or `http://127.0.0.1:3001/v1`)
+- **LAN URL**: `http://<your-phone-ip>:3001/v1`
+- **Default API Key**: `freellmapi`
+
+### Python Example
 ```python
 from openai import OpenAI
 
@@ -29,54 +54,31 @@ client = OpenAI(
 
 response = client.chat.completions.create(
     model="auto",
-    messages=[{"role": "user", "content": "Hello!"}]
+    messages=[{"role": "user", "content": "Explain quantum tunneling in one sentence."}]
 )
+print(response.choices[0].message.content)
 ```
 
-## Build from Source
+### cURL
+```bash
+curl http://localhost:3001/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer freellmapi" \
+  -d '{
+    "model": "auto",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
 
-### Prerequisites
-- Android Studio with JDK 17
-- Android SDK 34
-- Android NDK 26+
-- CMake 3.22+
+---
 
-### Steps
-1. Clone the repository
-2. Download nodejs-mobile binaries:
-   ```bash
-   curl -L -o nodejs-mobile.zip "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.20.4/nodejs-mobile-v18.20.4-android.zip"
-   unzip -q nodejs-mobile.zip -d nodejs-mobile-tmp
-   mkdir -p android/app/libnode/bin/arm64-v8a
-   mkdir -p android/app/libnode/bin/armeabi-v7a
-   cp nodejs-mobile-tmp/bin/arm64-v8a/libnode.so android/app/libnode/bin/arm64-v8a/
-   cp nodejs-mobile-tmp/bin/armeabi-v7a/libnode.so android/app/libnode/bin/armeabi-v7a/
-   rm -rf nodejs-mobile.zip nodejs-mobile-tmp
-   ```
-3. Configure Android SDK:
-   ```bash
-   echo "sdk.dir=/path/to/android-sdk" > local.properties
-   ```
-4. Build:
-   ```bash
-   ./gradlew assembleDebug
-   ```
-5. Install:
-   ```bash
-   adb install android/app/build/outputs/apk/debug/app-debug.apk
-   ```
+## 🛠️ GitHub Actions Automation
 
-## Available Providers
+- **`build.yml`**: Compiles debug APKs on every push to `main` with native Node.js and C++ JNI bridge.
+- **`release.yml`**: Triggers on `v*` tags (e.g. `v1.0.0`) and publishes standalone 32-bit & 64-bit APK assets to GitHub Releases.
+- **`sync.yml`**: Periodically syncs upstream updates from `suponKhan/freellmapi` and merges updates into Android assets.
 
-### Keyless (No API Key)
-- Pollinations.ai: GPT-OSS 20B
-- ApiAirforce: Grok 4.1 Mini, Step 3.5 Flash
+---
 
-### With API Keys
-- Groq: Llama 3.3 70B, Qwen3 30B
-- Cerebras: Llama 3.3 70B, Qwen3 235B
-- Google Gemini: Gemini 2.5 Flash
-- Ollama Cloud: GPT-OSS 120B
-
-## License
-MIT
+## 📄 License
+MIT License. FreeLLMAPI Android Port.
