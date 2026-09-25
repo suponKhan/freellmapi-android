@@ -25,9 +25,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
     - name: Download nodejs-mobile
       run: |
         NODE_VERSION="18.20.4"
@@ -43,6 +40,7 @@ jobs:
         cp nodejs-mobile-tmp/jars/android-arm64-v8a/nodejs-mobile.jar android/app/libs/
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
+        echo "Downloaded nodejs-mobile binaries"
         ls -la android/app/libnode/bin/
         
     - name: Make gradlew executable
@@ -74,18 +72,23 @@ jobs:
           OpenAI-compatible LLM router for Android (32-bit + 64-bit)
         
           ### Features
-          - Foreground service keeps router alive
+          - Foreground service keeps router alive 24/7
           - Auto-start on boot
           - Works on mobile data, WiFi, or local network
-          - 34+ free LLM providers (keyless + optional keys)
+          - 6+ free LLM providers (keyless + optional API keys)
         
           ### Usage
-          1. Install APK
+          1. Install APK on Android device
           2. Grant notification permission
           3. Tap "Start Router"
           4. Use in your apps:
              - base_url: http://localhost:3001/v1
              - api_key: freellmapi
+        
+          ### Endpoints
+          - Chat: http://localhost:3001/v1/chat/completions
+          - Models: http://localhost:3001/v1/models
+          - Dashboard: http://localhost:3001/
         files: release-apks/*.apk
         draft: false
         prerelease: false
