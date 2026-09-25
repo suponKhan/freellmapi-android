@@ -27,9 +27,15 @@ jobs:
       
     - name: Download nodejs-mobile
       run: |
-        NODE_VERSION="18.20.4"
-        curl -L -o nodejs-mobile.zip "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v${NODE_VERSION}/nodejs-mobile-v${NODE_VERSION}-android.zip"
+        echo "Downloading nodejs-mobile v18.20.4..."
+        curl -L -o nodejs-mobile.zip "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.20.4/nodejs-mobile-v18.20.4-android.zip"
+        echo "Downloaded: $(ls -lh nodejs-mobile.zip)"
         unzip -q nodejs-mobile.zip -d nodejs-mobile-tmp
+        echo "Extracted to nodejs-mobile-tmp"
+        ls -la nodejs-mobile-tmp/bin/
+        
+    - name: Copy native libraries
+      run: |
         mkdir -p android/app/libnode/bin/arm64-v8a
         mkdir -p android/app/libnode/bin/armeabi-v7a
         mkdir -p android/app/libnode/bin/x86_64
@@ -40,12 +46,16 @@ jobs:
         cp nodejs-mobile-tmp/jars/android-arm64-v8a/nodejs-mobile.jar android/app/libs/
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
-        echo "Downloaded nodejs-mobile binaries"
+        echo "Native libraries installed"
         ls -la android/app/libnode/bin/
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        
     - name: Build Debug APKs
       run: ./gradlew assembleDebug
       env:
