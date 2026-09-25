@@ -1,0 +1,63 @@
+*.class
+*.jar
+*.aar
+build/
+.gradle/
+local.properties
+.idea/
+.caches/
+.DS_Store
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+```
+
+## Android
+*.apk
+*.ap_
+*.jks
+
+## Gradle
+.gradle/
+build/
+*/build/
+local.properties
+```
+
+## Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+## Secrets
+.env
+.env.local
+.env.production
+*.key
+*.pem
+*.jks
+```
+
+## IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+```
+
+## OS
+.DS_Store
+Thumbs.db
+```
+
+## Build outputs
+*.apk
+*.aab
+*.ap_
+build/
+*/build/
+```.

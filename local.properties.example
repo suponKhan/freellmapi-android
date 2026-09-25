@@ -1,0 +1,3 @@
+sdk.dir=/path/to/android-sdk
+# Change this to point to your Android SDK
+# Example: sdk.dir=C\:/Users/username/AppData/Local/Android/Sdk

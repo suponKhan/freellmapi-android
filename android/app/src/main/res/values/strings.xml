@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FreeLLMAPI</string>
+    <string name="channel_name">FreeLLMAPI Router</string>
+    <string name="channel_description">Background LLM router service</string>
+    <string name="notification_title">FreeLLMAPI Running</string>
+    <string name="notification_text">LLM proxy active on port 3001</string>
+</resources>
