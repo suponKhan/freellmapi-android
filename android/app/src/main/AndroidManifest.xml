@@ -5,7 +5,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="FreeLLMAPI"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
         <activity
             android:name=".MainActivity"
             android:exported="true">
