@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build APKs (32-bit + 64-bit)
+    name: Build APKs
     runs-on: ubuntu-latest
     
     steps:
@@ -22,34 +22,20 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Download nodejs-mobile binaries
-      run: |
-        curl -L -o nodejs-mobile.zip "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.20.4/nodejs-mobile-v18.20.4-android.zip"
-        unzip -q nodejs-mobile.zip -d nodejs-mobile-tmp
-        mkdir -p android/app/libnode/bin/arm64-v8a
-        mkdir -p android/app/libnode/bin/armeabi-v7a
-        mkdir -p android/app/libnode/bin/x86_64
-        cp nodejs-mobile-tmp/bin/arm64-v8a/libnode.so android/app/libnode/bin/arm64-v8a/
-        cp nodejs-mobile-tmp/bin/armeabi-v7a/libnode.so android/app/libnode/bin/armeabi-v7a/
-        cp nodejs-mobile-tmp/bin/x86_64/libnode.so android/app/libnode/bin/x86_64/
-        cp -r nodejs-mobile-tmp/include android/app/libnode/
-        rm -rf nodejs-mobile.zip nodejs-mobile-tmp
-        echo "Native libraries installed"
-        
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
     - name: Create local.properties
       run: |
-        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
         
-    - name: Build Debug APKs
+    - name: Build Debug APK
       run: ./gradlew assembleDebug
       env:
         ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
         
-    - name: Upload Debug APKs
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: freellmapi-android-debug

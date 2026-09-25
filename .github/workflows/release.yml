@@ -6,13 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Release tag name (e.g., v1.0.0)'
+        description: 'Release tag name'
         required: true
         type: string
 
 jobs:
   build:
-    name: Build Release APKs
+    name: Build Release APK
     runs-on: ubuntu-latest
     
     steps:
@@ -28,20 +28,15 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Build Release APKs
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+        
+    - name: Build Release APK
       run: ./gradlew assembleRelease
       env:
         ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
-        
-    - name: Rename APKs with version
-      run: |
-        TAG=${{ github.event.inputs.tag_name || github.ref_name }}
-        mkdir -p release-apks
-        for apk in android/app/build/outputs/apk/release/*.apk; do
-          cp "$apk" "release-apks/FreeLLMAPI-${TAG}-$(basename $apk).apk"
-        done
-        ls -la release-apks/
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
@@ -49,29 +44,14 @@ jobs:
         tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
         name: "FreeLLMAPI ${{ github.event.inputs.tag_name || github.ref_name }}"
         body: |
-          ## FreeLLMAPI Android Release
+          ## FreeLLMAPI Android
         
-          OpenAI-compatible LLM router for Android (32-bit + 64-bit)
-        
-          ### Features
-          - Foreground service keeps router alive 24/7
-          - Auto-start on boot
-          - Works on mobile data, WiFi, or local network
-          - 6+ free LLM providers (keyless + optional API keys)
+          OpenAI-compatible LLM router for Android
         
           ### Usage
-          1. Install APK on Android device
-          2. Grant notification permission
-          3. Tap "Start Router"
-          4. Use in your apps:
-             - base_url: http://localhost:3001/v1
-             - api_key: freellmapi
-        
-          ### Endpoints
-          - Chat: http://localhost:3001/v1/chat/completions
-          - Models: http://localhost:3001/v1/models
-          - Dashboard: http://localhost:3001/
-        files: release-apks/*.apk
+          - base_url: http://localhost:3001/v1
+          - api_key: freellmapi
+        files: android/app/build/outputs/apk/release/*.apk
         draft: false
         prerelease: false
       env:
