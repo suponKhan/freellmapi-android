@@ -1,63 +1,38 @@
-*.class
-*.jar
-*.aar
+# Android
+*.apk
+*.ap_
+*.aab
 build/
+*/build/
 .gradle/
 local.properties
 .idea/
 .caches/
 .DS_Store
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-```
+*.iml
+*.iws
+*.ipr
+.vscode/
 
-## Android
-*.apk
-*.ap_
-*.jks
+# Bytecode
+*.class
+*.dex
 
-## Gradle
-.gradle/
-build/
-*/build/
-local.properties
-```
-
-## Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-## Secrets
+# Secrets
 .env
 .env.local
 .env.production
 *.key
 *.pem
 *.jks
-```
+*.keystore
 
-## IDE
-.idea/
-.vscode/
-*.iml
-*.iws
-*.ipr
-```
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
 
-## OS
-.DS_Store
-Thumbs.db
-```
-
-## Build outputs
-*.apk
-*.aab
-*.ap_
-build/
-*/build/
-```.
+# Gradle wrapper - KEEP
+!gradle/wrapper/gradle-wrapper.jar
