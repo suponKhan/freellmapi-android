@@ -27,15 +27,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y android-sdk
         echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
         
     - name: Grant execute permission
       run: chmod +x ./gradlew
       
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
-        
     - name: Build Debug APK
       run: ./gradlew assembleDebug
       env:
