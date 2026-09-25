@@ -36,15 +36,17 @@ jobs:
         mkdir -p android/app/libnode/bin/arm64-v8a
         mkdir -p android/app/libnode/bin/armeabi-v7a
         mkdir -p android/app/libnode/bin/x86_64
+        mkdir -p android/app/libs
         cp nodejs-mobile-tmp/bin/arm64-v8a/libnode.so android/app/libnode/bin/arm64-v8a/
         cp nodejs-mobile-tmp/bin/armeabi-v7a/libnode.so android/app/libnode/bin/armeabi-v7a/
         cp nodejs-mobile-tmp/bin/x86_64/libnode.so android/app/libnode/bin/x86_64/
+        cp nodejs-mobile-tmp/jars/android-arm64-v8a/nodejs-mobile.jar android/app/libs/
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
         ls -la android/app/libnode/bin/
         
-    - name: Grant execute permission
-      run: chmod +x gradlew
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
       
     - name: Build Release APKs
       run: ./gradlew assembleRelease
@@ -61,26 +63,29 @@ jobs:
         done
         ls -la release-apks/
         
-    - name: Create Release
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
         name: "FreeLLMAPI ${{ github.event.inputs.tag_name || github.ref_name }}"
         body: |
           ## FreeLLMAPI Android Release
-          
+        
           OpenAI-compatible LLM router for Android (32-bit + 64-bit)
-          
-          ### Endpoints
-          - Chat: `http://localhost:3001/v1/chat/completions`
-          - Models: `http://localhost:3001/v1/models`
-          - Dashboard: `http://localhost:3001/`
-          
+        
+          ### Features
+          - Foreground service keeps router alive
+          - Auto-start on boot
+          - Works on mobile data, WiFi, or local network
+          - 34+ free LLM providers (keyless + optional keys)
+        
           ### Usage
           1. Install APK
           2. Grant notification permission
           3. Tap "Start Router"
-          4. Use `api_key=freellmapi` in your apps
+          4. Use in your apps:
+             - base_url: http://localhost:3001/v1
+             - api_key: freellmapi
         files: release-apks/*.apk
         draft: false
         prerelease: false
