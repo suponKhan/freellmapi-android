@@ -23,13 +23,8 @@ jobs:
         distribution: 'temurin'
         
     - name: Setup Android SDK
-      run: |
-        # Use pre-installed Android SDK on GitHub Actions
-        export ANDROID_HOME=$HOME/android-sdk
-        mkdir -p $ANDROID_HOME
-        # Install required components
-        yes | sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-35" "build-tools;35.0.0" >/dev/null 2>&1 || true
-        
+      uses: android-actions/setup-android@v3
+      
     - name: Download nodejs-mobile
       run: |
         NODE_VERSION="18.20.4"
@@ -46,14 +41,11 @@ jobs:
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
         echo "Downloaded nodejs-mobile binaries"
+        ls -la android/app/libnode/bin/
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
-        
     - name: Build Debug APKs
       run: ./gradlew assembleDebug
       env:
