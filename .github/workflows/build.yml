@@ -35,14 +35,13 @@ jobs:
         mkdir -p android/app/libnode/bin/arm64-v8a
         mkdir -p android/app/libnode/bin/armeabi-v7a
         mkdir -p android/app/libnode/bin/x86_64
-        mkdir -p android/app/libs
         cp nodejs-mobile-tmp/bin/arm64-v8a/libnode.so android/app/libnode/bin/arm64-v8a/
         cp nodejs-mobile-tmp/bin/armeabi-v7a/libnode.so android/app/libnode/bin/armeabi-v7a/
         cp nodejs-mobile-tmp/bin/x86_64/libnode.so android/app/libnode/bin/x86_64/
-        cp nodejs-mobile-tmp/jars/android-arm64-v8a/nodejs-mobile.jar android/app/libs/
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
         echo "Native libraries installed"
+        ls -la android/app/libnode/bin/
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
