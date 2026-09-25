@@ -22,13 +22,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: List files
-      run: find . -type f -name "*.kt" -o -name "*.xml" -o -name "*.gradle*" | head -30
+    - name: Grant execute permission
+      run: chmod +x ./gradlew
       
     - name: Build with Gradle
-      run: |
-        export ANDROID_HOME=/usr/local/lib/android/sdk
-        chmod +x ./gradlew
-        ./gradlew assembleDebug
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: assembleDebug
+        build-root-directory: .
       env:
+        ANDROID_HOME: /usr/local/lib/android/sdk
+        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         TERM: dumb

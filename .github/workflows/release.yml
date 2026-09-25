@@ -25,18 +25,16 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Make gradlew executable
+    - name: Grant execute permission
       run: chmod +x ./gradlew
       
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
-        
-    - name: Build Release APK
-      run: ./gradlew assembleRelease --stacktrace
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: assembleRelease
       env:
         ANDROID_HOME: /usr/local/lib/android/sdk
-        TERM: dumb
+        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
@@ -47,12 +45,6 @@ jobs:
           ## FreeLLMAPI Android
         
           OpenAI-compatible LLM router for Android
-        
-          ### Usage
-          - base_url: http://localhost:3001/v1
-          - api_key: freellmapi
         files: android/app/build/outputs/apk/release/*.apk
-        draft: false
-        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
