@@ -22,9 +22,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
     - name: Download nodejs-mobile
       run: |
         echo "Downloading nodejs-mobile v18.20.4..."
@@ -32,7 +29,6 @@ jobs:
         echo "Downloaded: $(ls -lh nodejs-mobile.zip)"
         unzip -q nodejs-mobile.zip -d nodejs-mobile-tmp
         echo "Extracted to nodejs-mobile-tmp"
-        ls -la nodejs-mobile-tmp/bin/
         
     - name: Copy native libraries
       run: |
@@ -47,7 +43,6 @@ jobs:
         cp -r nodejs-mobile-tmp/include android/app/libnode/
         rm -rf nodejs-mobile.zip nodejs-mobile-tmp
         echo "Native libraries installed"
-        ls -la android/app/libnode/bin/
         
     - name: Make gradlew executable
       run: chmod +x ./gradlew
@@ -55,11 +50,12 @@ jobs:
     - name: Create local.properties
       run: |
         echo "sdk.dir=$ANDROID_HOME" > local.properties
+        echo "ANDROID_HOME is: $ANDROID_HOME"
         
     - name: Build Debug APKs
       run: ./gradlew assembleDebug
       env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
         
     - name: Upload Debug APKs

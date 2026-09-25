@@ -50,10 +50,14 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
+    - name: Create local.properties
+      run: |
+        echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
+        
     - name: Build Release APKs
       run: ./gradlew assembleRelease
       env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_HOME: /usr/local/lib/android/sdk
         TERM: dumb
         
     - name: Rename APKs with version
