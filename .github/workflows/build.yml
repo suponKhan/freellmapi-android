@@ -25,11 +25,10 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
-    - name: Grant execute permission
-      run: chmod +x ./gradlew
-      
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: assembleDebug
       env:
         ANDROID_HOME: ${{ env.ANDROID_HOME }}
         TERM: dumb
