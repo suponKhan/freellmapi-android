@@ -22,15 +22,14 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
     - name: Grant execute permission
       run: chmod +x ./gradlew
       
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: assembleDebug
-        build-root-directory: .
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
       env:
-        ANDROID_HOME: /usr/local/lib/android/sdk
-        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
         TERM: dumb
